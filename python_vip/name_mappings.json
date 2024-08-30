@@ -1,0 +1,45 @@
+{
+    "models": {
+        "A": {
+            "name": "sac_penalizeDeflection",
+            "type": "sac",
+            "path": "../working_models/assistants/sac_penalizeDeflection.zip",
+            "retrained_path": "../working_models/assistants/sac_penalizeDeflection_alpha_study_batch_1.zip",
+            "model_intermittancy": 0,
+            "window_size": 0.5
+        },
+        "B": {
+            "name": "sac_airl_300k",
+            "type": "sac",
+            "path": "../working_models/assistants/sac_airl_300k.zip",
+            "retrained_path": "../working_models/assistants/sac_airl_300k_alpha_study_batch_1.zip",
+            "model_intermittancy": 0,
+            "window_size": 0.5
+          },
+          "C": {
+            "name": "ddpg_penalizeDeflection",
+            "type": "ddpg",
+            "retrained_path": "../working_models/assistants/ddpg_penalizeDeflection_alpha_study_batch_1.zip",
+            "path": "../working_models/assistants/ddpg_penalizeDeflection.zip",
+            "model_intermittancy": 0,
+            "window_size": 0.5
+          },
+          "D" : {
+            "name": "assistant_mars_mlp_all_prof",
+            "type": "mlp",
+            "path": "../working_models/assistants/assistant_mars_mlp_all_prof.ckpt",
+            "retrained_path": "../working_models/assistants/assistant_mars_mlp_all_prof_hitl_retrain_alpha_study_batch_1.ckpt",
+            "model_intermittancy": 0,
+            "window_size": 0.0
+          },
+
+          "E": {
+            "name": "assistant_mars_lstm_good_small_window",
+            "type": "lstm",
+            "path": "../working_models/assistants/assistant_mars_lstm_good_small_window.ckpt",
+            "retrained_path": "../working_models/assistants/assistant_mars_lstm_good_small_window_hitl_retrain_alpha_study_batch_1.ckpt",
+            "model_intermittancy": 0,
+            "window_size": 0.2
+          }
+    }
+}

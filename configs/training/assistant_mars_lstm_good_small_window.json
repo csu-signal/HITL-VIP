@@ -1,0 +1,28 @@
+{
+    "dl_training_parameters": {
+        "type" : "lstm",
+        "past_window_size": 10,
+        "future_time": 1,
+        "lstm_format": true,
+        "dataset": "mars",
+        "proficiency": ["Good"], 
+        "train_fraction": 0.9,
+        "name": "assistant_mars_lstm_good_small_window",
+        "hyperparameters" : {
+            "learning_rate": 0.001,
+            "activation_function": "tanh",
+            "optimizer": "adam",
+            "epochs": 1000,
+            "batch_size": 10000,
+            "dropout_prob": 0.1
+        },
+        "architecture": {
+            "n_inputs": 3,
+            "recurrent_hidden_size": 100,
+            "recurrent_num_layers": 4,
+            "fc_n_hiddens_per_layer": [100, 100, 100],
+            "bidirectional": false,
+            "n_outputs": 1
+        }
+    }
+}

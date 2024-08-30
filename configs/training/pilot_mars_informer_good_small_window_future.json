@@ -1,0 +1,14 @@
+{
+    "dl_training_parameters": {
+        "type" : "informer",
+        "past_window_size": 15,
+        "future_time": 5,
+        "rolling_window_size": 5,
+        "dataset": "mars",
+        "proficiency": ["Good"], 
+        "lstm_format": true,
+        "train_fraction": 0.9,
+        "name": "pilot_mars_informer_good_small_window_future"
+        
+    }
+}

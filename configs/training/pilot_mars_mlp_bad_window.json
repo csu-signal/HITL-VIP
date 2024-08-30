@@ -1,0 +1,24 @@
+{
+    "dl_training_parameters": {
+        "type" : "mlp",
+        "past_window_size": 25,
+        "future_time": 1,
+        "lstm_format": false,
+        "dataset": "mars",
+        "proficiency": ["Bad"], 
+        "train_fraction": 0.9,
+        "name": "pilot_mars_mlp_bad_window",
+        "hyperparameters" : {
+            "learning_rate": 0.001,
+            "activation_function": "tanh",
+            "optimizer": "adam",
+            "epochs": 1000,
+            "batch_size": 10000
+        },
+        "architecture": {
+            "n_inputs": 3,
+            "hidden_layers": [100, 100, 100],
+            "n_outputs": 1
+        }
+    }
+}

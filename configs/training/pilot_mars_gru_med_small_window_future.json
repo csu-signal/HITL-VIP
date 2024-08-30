@@ -1,0 +1,28 @@
+{
+    "dl_training_parameters": {
+        "type" : "gru",
+        "past_window_size": 15,
+        "future_time": 5,
+        "lstm_format": true,
+        "dataset": "mars",
+        "proficiency": ["Medium"], 
+        "train_fraction": 0.9,
+        "name": "pilot_mars_gru_med_small_window_future",
+        "hyperparameters" : {
+            "learning_rate": 0.001,
+            "activation_function": "tanh",
+            "optimizer": "adam",
+            "epochs": 1000,
+            "batch_size": 10000,
+            "dropout_prob": 0.1
+        },
+        "architecture": {
+            "n_inputs": 3,
+            "recurrent_hidden_size": 100,
+            "recurrent_num_layers": 4,
+            "fc_n_hiddens_per_layer": [100, 100, 100],
+            "bidirectional": false,
+            "n_outputs": 1
+        }
+    }
+}
