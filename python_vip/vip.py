@@ -1,3 +1,4 @@
+from multiprocessing import freeze_support
 import sys
 sys.path.append('../')
 import os
@@ -263,12 +264,16 @@ def main():
     parser.add_argument('--ppt_id', required=False, default="", type=str)
     parser.add_argument('--catch_trial', required=False, action="store_true", default=False)
     parser.add_argument('--monitor', required=False, default=0, type= int)
+    parser.add_argument('--show_metadata', required=False, default=False, action='store_true')
+    # parser.add_argument('--plot_post_performance', required=False, default=False, action='store_true')
+    parser.add_argument('--use_joystick', required=False, default=False, action='store_true')
     # parser.add_argument('--study_name', required=False, default="", type=str)
     args = parser.parse_args()
 
 
     device = args.device
     monitor = args.monitor
+    use_joystick = args.use_joystick
     model_path: str = args.model_path
     model_intermittent: int = args.model_intermittent / 100
     model: Union[mlp_regressor, SAC, DDPG] = None
@@ -376,7 +381,10 @@ def main():
 
 
     eval_mode = args.eval_mode
+
     show_crash_bounds = args.show_crash_bounds
+    show_metadata = args.show_metadata
+    # plot_info_realtime = args.plot_info_realtime
     pygame.font.init()
     font = pygame.font.SysFont('didot.ttc', 24)
 
@@ -489,7 +497,8 @@ def main():
         axis_x: float = 0 # previous joystick value
         check_destab_action = lambda values : np.all(values != 0) and np.all(np.sign(values) == np.sign(values[0]))
 
-        
+        human_action: float = 0 # previous human action
+        model_action: float = 0 # previous model action
 
         crash_prob: float = 0
         check = False
@@ -578,6 +587,8 @@ def main():
                                 axis_x = -1
                             elif keys[pygame.K_RIGHT]:
                                 axis_x = 1
+                            else:
+                                axis_x = 0
 
                         pilot_action = axis_x # only when an actual human is performing 
 
@@ -598,6 +609,8 @@ def main():
                                 axis_x = -1
                             elif keys[pygame.K_RIGHT]:
                                 axis_x = 1
+                            else:
+                                axis_x = 0
                     
                         assistant_action = axis_x
                     else:
@@ -624,6 +637,8 @@ def main():
                                 axis_x = -1
                             elif keys[pygame.K_RIGHT]:
                                 axis_x = 1
+                            else:
+                                axis_x = 0
 
                         pilot_action = axis_x # only when an actual human is performing 
                     else:
@@ -651,7 +666,6 @@ def main():
                 if np.random.rand() < model_intermittent :
                     model_action = 0
 
-                human_action=0
                 if joystick is not None:
                     human_action = joystick.get_axis(0)
                     if abs(human_action) < 0.1:
@@ -662,6 +676,8 @@ def main():
                         human_action = -1
                     elif keys[pygame.K_RIGHT]:
                         human_action = 1
+                    else:
+                        human_action = 0
                 
                 if human_action != 0:
                     if np.sign(human_action) != np.sign(model_action):
@@ -686,7 +702,7 @@ def main():
                 who_made_the_action.append(1)
                 crash_probabilities.append(crash_prob)
                 # Read input from the joystick or keyboard
-                if joystick is not None:
+                if use_joystick and joystick is not None:
                     axis_x = joystick.get_axis(0)
                     if abs(axis_x) < 0.1:
                         axis_x = 0
@@ -703,6 +719,8 @@ def main():
                         axis_x = -1
                     elif keys[pygame.K_RIGHT]:
                         axis_x = 1
+                    else:
+                        axis_x = 0
                 
                 pilot_actions.append(axis_x)
                 assistant_actions.append(0.0)
@@ -786,6 +804,25 @@ def main():
                 crash_bound_y = base_y - base_height / 2 - (pendulum.length/100*200) * math.cos(-POS_LIMIT)
 
                 pygame.draw.line(screen, (255, 0, 0), (base_center_x, base_center_y), (crash_bound_x, crash_bound_y), 1)
+            
+
+            pygame.draw.rect(screen, (255, 255, 255), pygame.Rect(0, 0, 600, 20))
+            text = font.render(f"Time Left: {MAX_TRIAL_TIME - ((time_elapsed + total_time_elapsed)/1000):0.3f} seconds", True, (0, 0, 0))
+            screen.blit(text, (20, 40))
+            if show_metadata:
+                
+                text = font.render(f"Position: {np.degrees(pendulum.theta):0.3f} degrees", True, (0, 0, 0))
+                screen.blit(text, (20, 60))
+                text = font.render(f"Velocity: {np.degrees(pendulum.theta_dot):0.3f} degrees/s", True, (0, 0, 0))
+                screen.blit(text, (20, 80))
+                text = font.render(f"Joystick deflection: {axis_x:0.3f}", True, (0, 0, 0))
+                screen.blit(text, (20, 100))
+                text = font.render(f"Crash probability: {crash_prob:0.3f}", True, (0, 0, 0))
+                screen.blit(text, (20, 120))
+                text = font.render(f"User action: {human_action:0.3f}", True, (0, 0, 0))
+                screen.blit(text, (20, 140))
+                text = font.render(f"AI action: {model_action:0.3f}", True, (0, 0, 0))
+                screen.blit(text, (20, 160))
 
 
             # Check if the pendulum has fallen
@@ -890,6 +927,9 @@ def main():
         plt.clf()
         plot_trial_crash_prob(times, positions, velocities, crash_probabilities, f'{output_dir}{output_file_prefix}_trial_plot_crash_probs.png')
 
+        # plt.clf()
+        # plot_trial_pos_vel(times, positions, velocities, destab_actions, f'{output_dir}{output_file_prefix}_trial_plot_pos_vel.png')
+
         # need to save experiment details e.g. constants, noises etc. 
         
         # saving raw data 
@@ -897,7 +937,10 @@ def main():
         dataframe = pd.DataFrame(data, columns=['time', 'angular position', 'angular velocity', 'joystick deflection', 'action_made_by', 'pilot_actions', 'assistant_actions', 'destabilizing_actions', 'crash_probabilities', 'is_crash_condition_triggered'])
         dataframe.to_csv(f'{output_dir}{output_file_prefix}_trial_data.csv', index=False)
 
-
+    pygame.display.quit()
+    pygame.quit()
+    sys.exit()
 
 if __name__ == "__main__":
+    # freeze_support()
     main()
