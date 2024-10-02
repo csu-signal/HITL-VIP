@@ -13,6 +13,7 @@ International Conference on Human-Agent Interaction (HAI '24) proceedings.
 
 * [Directory structure](#directory-structure)
 * [Environment setup](#environment-setup)
+* [HITL tool](#hitl-tool)
 * [Digitial twin study](#running-the-digital-twins-study)
 * [Human subject study](#running-the-human-subject-study)
 
@@ -23,7 +24,7 @@ International Conference on Human-Agent Interaction (HAI '24) proceedings.
 * `working_models/`: saved checkpoints/weights of the models used in evaluations.
 * `deep_learning/`: code dealing with creating and training deep learning models e.g. mlp, rnn, lstm, gru, informer(transformer).
 * `reinforcement/`: code dealing with creating and training reinforcement models e.g. ddpg, sac, behavior cloning (BC), adversarial inverse reinforcement learning (AIRL). 
-* `python_vip/`: the PyVIP program, faithful python port of the VIP task. 
+* `python_vip/`: the PyVIP program, a faithful python port of the VIP task and the HITL tool. 
 * `evaluation/`: the various scripts used for running the PyVIP simulations and metric calculations used. 
 
 For more details, look at the READMEs in the relevant directories.  
@@ -42,6 +43,34 @@ For more details, look at the READMEs in the relevant directories.
 5. Copy the saved models from `reinforcement/saved_models/` to `/working_models/assistants/`
 6. For the deep learning models, run the `train.py` for each of the training configs present in `configs/training/`. The informer model is optional to train. 
 7. Follow the steps mentioned in `deep_learning/README.md` to copy the saved checkpoints to the relevant directory in `working_models/`.
+
+Make sure to update all placeholder paths in the code before running. The placeholders are defined as `path_variable_xyz=<path_to_repo>/<path_to_dir>` 
+
+## HITL tool
+
+The commands below runs the HITL tool
+
+```
+cd python_vip/
+python realtime_hitl_training.py --mode {pre_demo,human_training,ai_training} --study_name STUDY_NAME --ppt_id PPT_ID [--model_id MODEL_ID]
+```
+
+* mode: defines whether to 
+    1) assimilate the user with the commands and control mode (pre_demo)
+    2) train a human with the help of AI assistance (human_training)
+    3) train an AI with the help of a human until performance is satisfactory (ai_training)
+* study_name: the name to be given for the study
+* ppt_id: an arbritrary id for the human
+* model_id: the model ID as defined in `python_vip/name_mappings.json`. This is a required argument for the human_training and ai_training modes. The default is "A" which refers to a SAC based RL assistant. 
+
+- At the end of the run, the tool will display a graphic showing before and after performance. The graph will be saved at `python_vip/output/`.
+- If being run in ai_training mode, the tool will output the path of the updated model in the terminal. Make sure to save it or update the name_mappings.json for use in further experiments. 
+
+#### known issues
+
+* While running AI training, if you keep training the AI for 3 or more repetitions in the same runtime, the tool may run out of memory depending on your machine leading to a segmentation fault. The cause of the memory leak hasn't been found yet. But since all intermediary outputs are saved in either `python_vip/output/` or `./output/`, you can update the code to run from the failed step. 
+
+
 
 ## Running the digital twins study
 8. Create the simulation configs via the commands mentioned in `/configs/README.md` under the `Simulation` section.
