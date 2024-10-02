@@ -160,9 +160,8 @@ def main():
     np.random.seed(42)
 
     parser = argparse.ArgumentParser(
-        prog="Human Trials Runner",
-        description="This script runs the vip script given a participant and the assigned model assistant",
-        epilog="IDK what this does",
+        prog="HITL tool Runner",
+        description="This script runs the HITL tool, where either a human can be trained with an AI assistant or an AI model can be updated with human feedback",
     )
 
     parser.add_argument("--mode", required=True, type=str, choices=["pre_demo", "human_training", "ai_training"])
@@ -189,7 +188,7 @@ def main():
     assistant_model_details = model_details["models"][model_id]
 
     crash_prediction_args = " --crash_model_path ../working_models/crash_prediction/model_1000ms_window_800ms_ahead/model --crash_model_norm_stats ../working_models/crash_prediction/model_1000ms_window_800ms_ahead/normalization_mean_std.pkl --crash_pred_window 1"
-    working_dir = "/Users/mannan/work/research/m3x/m3x-etai/python_vip"
+    working_dir = "<path_to_dir>/python_vip"
 
 
     if run_mode == "pre_demo":
