@@ -1,5 +1,21 @@
 # README
 
+
+Official repository for 
+
+**"Combating Spatial Disorientation in a Dynamic Self-Stabilization Task Using AI Assistants"** 
+
+Sheikh Mannan, Paige Hansen, Vivekanand Pandey Vimal, Hannah N. Davies, Paul DiZio, Nikhil Krishnaswamy. 
+
+International Conference on Human-Agent Interaction (HAI '24) proceedings. 
+[arvix](https://doi.org/10.48550/arXiv.2409.14565)
+
+
+* [Directory structure](#directory-structure)
+* [Environment setup](#environment-setup)
+* [Digitial twin study](#running-the-digital-twins-study)
+* [Human subject study](#running-the-human-subject-study)
+
 ## Directory structure
 
 * `configs/`: contains configs used for either training deep learning models or for simulations for models to run with the PyVIP program. 
@@ -12,7 +28,7 @@
 
 For more details, look at the READMEs in the relevant directories.  
 
-## How to run
+## Environment setup
 
 1. Create a new conda env with python=3.9.16
 2. Follow the steps in the `reinforcement/`, `deep_learning/` and `python_vip/` readmes to install the required libraries.
@@ -27,7 +43,7 @@ For more details, look at the READMEs in the relevant directories.
 6. For the deep learning models, run the `train.py` for each of the training configs present in `configs/training/`. The informer model is optional to train. 
 7. Follow the steps mentioned in `deep_learning/README.md` to copy the saved checkpoints to the relevant directory in `working_models/`.
 
-### Running the digital twins study
+## Running the digital twins study
 8. Create the simulation configs via the commands mentioned in `/configs/README.md` under the `Simulation` section.
 9. Get performance statistics for the unassisted pilot models: run `evaluate_all_pilots.sh` following instructions under `evaluation/README.md`. (Optionally, get performance statistics for assistants performing the task solo by running `evaluate_all_assistants.sh` in the same way.
 10. Run the different evaluation sets.  These are broken up by proficiency of the pilot: `run_good_evals.sh`, `run_med_evals.sh`, `run_bad_evals.sh`. Order does not matter.
@@ -35,7 +51,7 @@ For more details, look at the READMEs in the relevant directories.
 12. Run `compare_performance.py` to get the diff metrics between assisted and unassisted pilots.
 13. After getting the diff metric files, run `analysis_trends_plot.ipynb` to create plots for that identify trends improvements or deterioration in performance of the pilots.
 
-### Running the human subject study
+## Running the human subject study
 
 `cd python_vip` 
 `python human_trial_runner.py --study_name human_ai_study --use_crash_predictor --session_num <1 or 2> --ppt_id <id>`
