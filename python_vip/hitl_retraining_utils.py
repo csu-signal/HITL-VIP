@@ -545,7 +545,7 @@ def retrain_dl_model(data, assistant_model_details, experiment_name):
     early_stopping = EarlyStopping(
         monitor='val_MAE',
         min_delta=0.00001,
-        patience= 5,
+        patience= 2,
         mode='min'
     )
 

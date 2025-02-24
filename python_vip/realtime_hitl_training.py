@@ -169,6 +169,7 @@ def main():
     parser.add_argument("--ppt_id", required=True, type=str)
     parser.add_argument("--eval_mode", required=False, action="store_true")
     parser.add_argument("--model_id", required=False, type=str, default="A")
+    parser.add_argument("--train_fresh", required=False, action="store_true", help="If set, the model will be trained from scratch")
 
     args = parser.parse_args()
 
@@ -177,6 +178,7 @@ def main():
     model_id = args.model_id
     eval_mode = args.eval_mode
     run_mode = args.mode
+    train_fresh = args.train_fresh
 
 
     model_details_path = "./name_mappings.json"
@@ -188,7 +190,7 @@ def main():
     assistant_model_details = model_details["models"][model_id]
 
     crash_prediction_args = " --crash_model_path ../working_models/crash_prediction/model_1000ms_window_800ms_ahead/model --crash_model_norm_stats ../working_models/crash_prediction/model_1000ms_window_800ms_ahead/normalization_mean_std.pkl --crash_pred_window 1"
-    working_dir = "<path_to_dir>/python_vip"
+    working_dir = "/Users/mannan/work/research/m3x/HITL-VIP/python_vip"
 
 
     if run_mode == "pre_demo":
@@ -198,7 +200,7 @@ def main():
         print performance
         """
         
-        command_pre_demo = f"python vip.py --study_name {study_name} --ppt_id {ppt_id} --experiment_name {run_mode} --show_metadata --show_crash_bounds" + crash_prediction_args + f" --protocol ./human_trials_1_protocols/pre_demo.csv" + " --use_joystick" + (" --eval_mode" if eval_mode else "")
+        command_pre_demo = f"python vip.py --study_name {study_name} --ppt_id {ppt_id} --experiment_name {run_mode} --show_metadata --show_crash_bounds" + crash_prediction_args + f" --protocol ./human_trials_1_protocols/pendulum.csv" + " --use_joystick" + (" --eval_mode" if eval_mode else "")
 
         print(f"Running pre-demo mode")
 
@@ -212,7 +214,7 @@ def main():
         then run with AI suggesting
         """
         
-        command_human = f"python vip.py --study_name {study_name} --ppt_id {ppt_id} --experiment_name {run_mode} " + crash_prediction_args + f" --protocol ./human_trials_1_protocols/rdk_hard.csv" + " --use_joystick" + (" --eval_mode" if eval_mode else "")
+        command_human = f"python vip.py --study_name {study_name} --ppt_id {ppt_id} --experiment_name {run_mode} " + crash_prediction_args + f" --protocol ./human_trials_1_protocols/rdk_alone.csv" + " --use_joystick" + (" --eval_mode" if eval_mode else "")
 
         Path(f"../configs/simulation/{study_name}/{ppt_id}/").mkdir(
             parents=True, exist_ok=True
@@ -242,7 +244,7 @@ def main():
             json.dump(config, f)
 
 
-        command_human_with_ai = f"python vip.py --study_name {study_name} --ppt_id {ppt_id} --experiment_name {run_mode} --protocol ./human_trials_1_protocols/rdk_hard.csv --experiment_config ../configs/simulation/{study_name}/{ppt_id}/demo_config.json" + (" --eval_mode" if eval_mode else "")
+        command_human_with_ai = f"python vip.py --study_name {study_name} --ppt_id {ppt_id} --experiment_name {run_mode} --protocol ./human_trials_1_protocols/rdk_alone.csv --experiment_config ../configs/simulation/{study_name}/{ppt_id}/demo_config.json" + (" --eval_mode" if eval_mode else "")
 
         print(f"Running human training mode")
         os.system(f"cd {working_dir} && {command_human}")
@@ -259,45 +261,57 @@ def main():
         run retrained AI alone
         """
         inp = "no"
-        model_path = assistant_model_details["path"]
+        model_path = ""
+        if train_fresh:
+            model_path = assistant_model_details["path"]
+        elif not train_fresh and "retrained_path" in assistant_model_details:
+            model_path = assistant_model_details["retrained_path"]
+        else:
+            model_path = assistant_model_details["path"]
 
-        command_ai_alone = f"python vip.py --study_name {study_name} --ppt_id {ppt_id} --experiment_name {run_mode}_{model_id}_alone --show_metadata --show_crash_bounds" + crash_prediction_args + f" --protocol ./human_trials_1_protocols/rdk_hard.csv " + f" --model_type {assistant_model_details['type']} --model_path {model_path} --model_window_size {assistant_model_details['window_size']}" + (" --eval_mode" if eval_mode else "")
+
+
+        command_ai_alone = f"python vip.py --study_name {study_name} --ppt_id {ppt_id} --experiment_name {run_mode}_{model_id}_alone --show_metadata --show_crash_bounds" + crash_prediction_args + f" --protocol ./human_trials_1_protocols/rdk_alone.csv " + f" --model_type {assistant_model_details['type']} --model_path {model_path} --model_window_size {assistant_model_details['window_size']}" + (" --eval_mode" if eval_mode else "")
 
         print(f"Running {assistant_model_details['name']} model alone")
         os.system(f"cd {working_dir} && {command_ai_alone}")
 
-        while inp == "no":
-            print("Running HITL trial with AI in control and human suggesting in HITL mode")
+        # while inp == "no":
+        print("Running HITL trial with AI in control and human suggesting in HITL mode")
 
-            command_hitl = f"python vip.py --study_name {study_name} --ppt_id {ppt_id} --experiment_name {run_mode}_{model_id}_HITL --run_hitl --use_joystick" + crash_prediction_args + f" --protocol ./human_trials_1_protocols/rdk_hard.csv" + f" --model_type {assistant_model_details['type']} --model_path {model_path} --model_window_size {assistant_model_details['window_size']}" + (" --eval_mode" if eval_mode else "")
-            
-            # print(f"\n{command_hitl}\n")
-            os.system(f"cd {working_dir} && {command_hitl}")
+        command_hitl = f"python vip.py --study_name {study_name} --ppt_id {ppt_id} --experiment_name {run_mode}_{model_id}_HITL --run_hitl --use_joystick" + crash_prediction_args + f" --protocol ./human_trials_1_protocols/rdk_alone.csv" + f" --model_type {assistant_model_details['type']} --model_path {model_path} --model_window_size {assistant_model_details['window_size']}" + (" --eval_mode" if eval_mode else "")
+        
+        # print(f"\n{command_hitl}\n")
+        os.system(f"cd {working_dir} && {command_hitl}")
 
-            retrained_model = retrain_model(study_name, ppt_id, run_mode, model_id, assistant_model_details)
-            if retrained_model is None:
-                print("No retraining done as no disagreement data found OR model type not supported for retraining, exiting script...")
-                return
-            else:
-                print(f"Retrained model saved at {retrained_model}")
+        retrained_model = retrain_model(study_name, ppt_id, run_mode, model_id, assistant_model_details)
+        if retrained_model is None:
+            print("No retraining done as no disagreement data found OR model type not supported for retraining, exiting script...")
+            return
+        else:
+            print(f"Retrained model saved at {retrained_model}")
 
-            command_retrained_ai_alone = f"python vip.py --study_name {study_name} --ppt_id {ppt_id} --experiment_name {run_mode}_{model_id}_retrained_alone --show_metadata --show_crash_bounds" + crash_prediction_args + f" --protocol ./human_trials_1_protocols/rdk_hard.csv" + f" --model_type {assistant_model_details['type']} --model_path {retrained_model} --model_window_size {assistant_model_details['window_size']}" + (" --eval_mode" if eval_mode else "")   
+        command_retrained_ai_alone = f"python vip.py --study_name {study_name} --ppt_id {ppt_id} --experiment_name {run_mode}_{model_id}_retrained_alone --show_metadata --show_crash_bounds" + crash_prediction_args + f" --protocol ./human_trials_1_protocols/rdk_alone.csv" + f" --model_type {assistant_model_details['type']} --model_path {retrained_model} --model_window_size {assistant_model_details['window_size']}" + (" --eval_mode" if eval_mode else "")   
 
-            os.system(f"cd {working_dir} && {command_retrained_ai_alone}")
+        os.system(f"cd {working_dir} && {command_retrained_ai_alone}")
 
-            plot_performance(study_name, ppt_id, run_mode, model_id)
+        plot_performance(study_name, ppt_id, run_mode, model_id)
 
-            inp = input("If model performance was satisfactory, enter yes to exit, else press no to continue training: ")
-            while inp not in ["yes", "no"]:
-                inp = input("If model performance was satisfactory, enter yes to exit, else press no to continue training: ")
-            
-            if inp == "yes":
-                print("New model saved at ", retrained_model)
-                exit()
-            else:
-                print("Continuing training...")
-                model_path = retrained_model
-        print(f"\n\nUpdated model saved at {retrained_model}")
+        # inp = input("If model performance was satisfactory, enter yes to exit, else press no to continue training: ")
+        # while inp not in ["yes", "no"]:
+        #     inp = input("If model performance was satisfactory, enter yes to exit, else press no to continue training: ")
+        
+        # if inp == "yes":
+        #     print("New model saved at ", retrained_model)
+        #     exit()
+        # else:
+        #     print("Continuing training...")
+        #     model_path = retrained_model
+        print(f"\n\nUpdated model saved at {retrained_model}\nTo train further, run the script again with the updated model path and without the ``train_fresh`` argument\n\n")
+
+        model_details["models"][model_id]["retrained_path"] = retrained_model
+        with open(model_details_path, "w") as f:
+            json.dump(model_details, f, indent=4)
 
 
 if __name__ == "__main__":
