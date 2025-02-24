@@ -3,12 +3,15 @@
 
 Official repository for 
 
-**"Combating Spatial Disorientation in a Dynamic Self-Stabilization Task Using AI Assistants"** 
-
+> **"Combating Spatial Disorientation in a Dynamic Self-Stabilization Task Using AI Assistants"** 
 Sheikh Mannan, Paige Hansen, Vivekanand Pandey Vimal, Hannah N. Davies, Paul DiZio, Nikhil Krishnaswamy. 
-
 International Conference on Human-Agent Interaction (HAI '24) proceedings. 
-[arvix](https://doi.org/10.48550/arXiv.2409.14565)
+[ACM](https://dl.acm.org/doi/10.1145/3687272.3688329)
+
+> **"Bidirectional Human-AI Learning in Real-Time Disoriented Balancing"**
+Sheikh Mannan, Nikhil Krishnaswamy.
+AAAI 2025 Demo.
+[arxiv](https://arxiv.org/abs/2412.05802), [demo video](https://www.youtube.com/watch?v=coJdj0LIYa4)
 
 
 * [Directory structure](#directory-structure)
