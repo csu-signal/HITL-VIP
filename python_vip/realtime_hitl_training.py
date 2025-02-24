@@ -190,7 +190,7 @@ def main():
     assistant_model_details = model_details["models"][model_id]
 
     crash_prediction_args = " --crash_model_path ../working_models/crash_prediction/model_1000ms_window_800ms_ahead/model --crash_model_norm_stats ../working_models/crash_prediction/model_1000ms_window_800ms_ahead/normalization_mean_std.pkl --crash_pred_window 1"
-    working_dir = "/Users/mannan/work/research/m3x/HITL-VIP/python_vip"
+    working_dir = "<path_to_dir>/python_vip"
 
 
     if run_mode == "pre_demo":
