@@ -367,7 +367,7 @@ def retrain_vanilla_rl_model(data, assistant_model_details, experiment_name):
 
     features, model_actions, human_actions = model_dis_episodes[:, :-2], model_dis_episodes[:, -2], model_dis_episodes[:, -1]
 
-    targets = -1 * model_actions.reshape(-1, 1)
+    targets = human_actions.reshape(-1, 1)
 
 
     expert_observations = features
@@ -421,7 +421,7 @@ def retrain_airl_model(data, assistant_model_details, experiment_name):
 
     features, model_actions, human_actions = model_dis_episodes[:, :-2], model_dis_episodes[:, -2], model_dis_episodes[:, -1]
 
-    targets = -1 * model_actions.reshape(-1, 1)
+    targets = human_actions.reshape(-1, 1)
 
 
     env = PendulumEnv()
