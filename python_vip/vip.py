@@ -681,7 +681,7 @@ def main():
                 
                 if human_action != 0:
                     if np.sign(human_action) != np.sign(model_action):
-                        axis_x = human_action * -1
+                        axis_x = human_action
                         is_crash_condition_triggered.append(1)
                         DISAGREEMENT_EPISODES.append([model_input, model_action, human_action])
                     else:
