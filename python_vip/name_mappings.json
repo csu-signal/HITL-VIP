@@ -15,31 +15,52 @@
             "retrained_path": "../working_models/assistants/sac_airl_300k_alpha_study_batch_1.zip",
             "model_intermittancy": 0,
             "window_size": 0.5
-          },
-          "C": {
+        },
+        "C": {
             "name": "ddpg_penalizeDeflection",
             "type": "ddpg",
             "retrained_path": "../working_models/assistants/ddpg_penalizeDeflection_alpha_study_batch_1.zip",
             "path": "../working_models/assistants/ddpg_penalizeDeflection.zip",
             "model_intermittancy": 0,
             "window_size": 0.5
-          },
-          "D" : {
+        },
+        "D": {
             "name": "assistant_mars_mlp_all_prof",
             "type": "mlp",
             "path": "../working_models/assistants/assistant_mars_mlp_all_prof.ckpt",
-            "retrained_path": "../working_models/assistants/assistant_mars_mlp_all_prof_hitl_retrain_alpha_study_batch_1.ckpt",
+            "retrained_path": "./output/assistant_mars_mlp_all_prof_hitl_retrain_epochs_20_lr_1e-07/best_checkpoint.ckpt",
             "model_intermittancy": 0,
             "window_size": 0.0
-          },
-
-          "E": {
+        },
+        "E": {
             "name": "assistant_mars_lstm_good_small_window",
             "type": "lstm",
             "path": "../working_models/assistants/assistant_mars_lstm_good_small_window.ckpt",
-            "retrained_path": "../working_models/assistants/assistant_mars_lstm_good_small_window_hitl_retrain_alpha_study_batch_1.ckpt",
+            "retrained_path": "./output/assistant_mars_lstm_good_small_window_hitl_retrain_epochs_100_lr_1e-05/best_checkpoint.ckpt",
             "model_intermittancy": 0,
             "window_size": 0.2
-          }
+        },
+        "F": {
+            "name": "pilot_mars_mlp_bad_window",
+            "type": "mlp",
+            "path": "../working_models/pilots/pilot_mars_mlp_bad_window.ckpt",
+            "model_intermittancy": 0,
+            "window_size": 0.5,
+            "proficiency": [
+                "Bad"
+            ],
+            "future_time": 1
+        },
+        "G": {
+            "name": "pilot_mars_gru_med_small_window_future",
+            "type": "gru",
+            "path": "../working_models/pilots/pilot_mars_gru_med_small_window_future.ckpt",
+            "model_intermittancy": 0,
+            "window_size": 0.3,
+            "proficiency": [
+                "Medium"
+            ],
+            "future_time": 5
+        }
     }
 }
